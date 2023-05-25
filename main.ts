@@ -177,13 +177,14 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
         coins += preis * -1
         Neu.setPosition(Auswahl.x, Auswahl.y)
         Towers.push(Neu)
+        Towers_Cooldown.push(0)
         Coin_Sprite.destroy()
         Coin_Sprite = textsprite.create(convertToText(coins), 1, 3)
         Coin_Sprite.setPosition(78, 5)
     }
 })
-function Line_following () {
-	
+function Distance (SpriteA: Sprite, SpriteB: Sprite) {
+    return Math.sqrt((SpriteA.x - SpriteB.x) ** 2 + (SpriteA.y - SpriteB.y) ** 2)
 }
 function Pathfinding (Sprite2: Sprite, Waypoint: number, Index: number) {
     if (Sprite2.x == Waypoints[Waypoint] && Sprite2.y == Waypoints[Waypoint + 1]) {
@@ -366,6 +367,7 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
 let richtung = 0
 let Neu: Sprite = null
 let preis = 0
+let Towers_Cooldown: number[] = []
 let Towers: Sprite[] = []
 let Coin_Sprite: TextSprite = null
 let coins = 0
@@ -590,14 +592,37 @@ controller.moveSprite(Auswahl, 50, 50)
 Coin_Sprite.setPosition(78, 5)
 Coin_Sprite_Symbol.setPosition(64, 5)
 Towers = []
+Towers_Cooldown = []
 preis = 15
 Auswahl.setStayInScreen(true)
 forever(function () {
-    if (randint(0, 20) == 0) {
+    for (let I_Tower_Cooldown = 0; I_Tower_Cooldown <= Müll_.length - 1; I_Tower_Cooldown++) {
+        if (Towers_Cooldown[I_Tower_Cooldown] > 0) {
+            Towers_Cooldown[I_Tower_Cooldown] = Towers_Cooldown[I_Tower_Cooldown] - 1
+        }
+    }
+    pause(100)
+})
+forever(function () {
+    if (randint(0, 1) == 0) {
         Spawn_Müll(randint(0, 2))
     }
-    for (let index = 0; index <= Müll_.length - 1; index++) {
-        Pathfinding(Müll_[index], Müll_Index[index], index)
+    for (let I_Müll = 0; I_Müll <= Müll_.length - 1; I_Müll++) {
+        Pathfinding(Müll_[I_Müll], Müll_Index[I_Müll], I_Müll)
+        for (let I_Tower = 0; I_Tower <= Towers.length - 1; I_Tower++) {
+            if (Distance(Towers[I_Tower], Müll_[I_Müll]) < 10) {
+                if (Towers_Cooldown[I_Tower] == 0) {
+                    Towers_Cooldown[I_Tower] = 8
+                    Müll_Index.removeAt(I_Müll)
+                    sprites.destroy(Müll_[I_Müll])
+                    Müll_.removeAt(I_Müll)
+                    coins += 1
+                    Coin_Sprite.destroy()
+                    Coin_Sprite = textsprite.create(convertToText(coins), 1, 3)
+                    Coin_Sprite.setPosition(78, 5)
+                }
+            }
+        }
     }
     if (characterAnimations.matchesRule(Auswahl, characterAnimations.rule(Predicate.MovingRight))) {
         characterAnimations.runFrames(
