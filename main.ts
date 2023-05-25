@@ -188,17 +188,34 @@ function Line_following () {
 function Pathfinding (Sprite2: Sprite, Waypoint: number, Index: number) {
     if (Sprite2.x == Waypoints[Waypoint] && Sprite2.y == Waypoints[Waypoint + 1]) {
         Müll_Index[Index] = Waypoint + 2
-        Sprite2.follow(Waypoints_Sprite[(Waypoint + 2) / 2])
+        Sprite2.follow(Waypoints_Sprite[(Waypoint + 2) / 2], 10)
     }
 }
 function Spawn_Müll (Typ: number) {
-    Temp = sprites.create(img`
-        . b . . 
-        b a c . 
-        . c b . 
-        . . b . 
-        `, SpriteKind.Müll)
+    if (Typ == 0) {
+        Temp = sprites.create(img`
+            . b . . 
+            b a c . 
+            . c b . 
+            . . b . 
+            `, SpriteKind.Müll)
+    } else if (Typ == 1) {
+        Temp = sprites.create(img`
+            . . . . 
+            . 7 7 . 
+            7 6 6 8 
+            . . 8 . 
+            `, SpriteKind.Müll)
+    } else {
+        Temp = sprites.create(img`
+            . . . . 
+            . 2 2 . 
+            . 2 2 . 
+            . . . . 
+            `, SpriteKind.Müll)
+    }
     Temp.setPosition(110, 119)
+    Temp.follow(Waypoints_Sprite[0], 10)
     Müll_Index.push(0)
     Müll_.push(Temp)
 }
@@ -515,7 +532,7 @@ Waypoints_Sprite = []
 for (let index = 0; index <= Waypoints.length; index++) {
     if (index % 2 == 1) {
         Temp = sprites.create(img`
-            2 
+            . 
             `, SpriteKind.Marker)
         Temp.setPosition(Waypoints[index - 1], Waypoints[index])
         Waypoints_Sprite.push(Temp)
@@ -576,10 +593,10 @@ Towers = []
 preis = 15
 Auswahl.setStayInScreen(true)
 forever(function () {
-    if (randint(0, 10) == 0) {
-        Spawn_Müll(1)
+    if (randint(0, 20) == 0) {
+        Spawn_Müll(randint(0, 2))
     }
-    for (let index = 0; index <= Müll_.length; index++) {
+    for (let index = 0; index <= Müll_.length - 1; index++) {
         Pathfinding(Müll_[index], Müll_Index[index], index)
     }
     if (characterAnimations.matchesRule(Auswahl, characterAnimations.rule(Predicate.MovingRight))) {
