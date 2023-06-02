@@ -191,6 +191,10 @@ function Pathfinding (Sprite2: Sprite, Waypoint: number, Index: number) {
         Müll_Index[Index] = Waypoint + 2
         Sprite2.follow(Waypoints_Sprite[(Waypoint + 2) / 2], 10)
     }
+    if (Waypoint == Waypoints.length) {
+        Lösche_Müll(Index)
+        info.changeLifeBy(-1)
+    }
 }
 function Spawn_Müll (Typ: number) {
     if (Typ == 0) {
@@ -219,6 +223,11 @@ function Spawn_Müll (Typ: number) {
     Temp.follow(Waypoints_Sprite[0], 10)
     Müll_Index.push(0)
     Müll_.push(Temp)
+}
+function Lösche_Müll (Index: number) {
+    Müll_Index.removeAt(Index)
+    sprites.destroy(Müll_[Index])
+    Müll_.removeAt(Index)
 }
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     Typ += 1
@@ -567,7 +576,7 @@ Auswahl = sprites.create(img`
     ........................
     `, SpriteKind.Enemy)
 Typ = 0
-info.setLife(100)
+info.setLife(50)
 coins = 100
 Coin_Sprite = textsprite.create(convertToText(coins), 1, 3)
 let Coin_Sprite_Symbol = sprites.create(img`
@@ -605,9 +614,7 @@ forever(function () {
             if (Distance(Towers[I_Tower], Müll_[I_Müll]) < 10) {
                 if (Towers_Cooldown[I_Tower] == 0) {
                     Towers_Cooldown[I_Tower] = 8
-                    Müll_Index.removeAt(I_Müll)
-                    sprites.destroy(Müll_[I_Müll])
-                    Müll_.removeAt(I_Müll)
+                    Lösche_Müll(I_Müll)
                     coins += 1
                     Coin_Sprite.destroy()
                     Coin_Sprite = textsprite.create(convertToText(coins), 1, 3)
