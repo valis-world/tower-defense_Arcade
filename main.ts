@@ -596,15 +596,7 @@ Towers_Cooldown = []
 preis = 15
 Auswahl.setStayInScreen(true)
 forever(function () {
-    for (let I_Tower_Cooldown = 0; I_Tower_Cooldown <= Müll_.length - 1; I_Tower_Cooldown++) {
-        if (Towers_Cooldown[I_Tower_Cooldown] > 0) {
-            Towers_Cooldown[I_Tower_Cooldown] = Towers_Cooldown[I_Tower_Cooldown] - 1
-        }
-    }
-    pause(100)
-})
-forever(function () {
-    if (randint(0, 1) == 0) {
+    if (randint(0, 15) == 0) {
         Spawn_Müll(randint(0, 2))
     }
     for (let I_Müll = 0; I_Müll <= Müll_.length - 1; I_Müll++) {
@@ -693,4 +685,12 @@ forever(function () {
         characterAnimations.clearCharacterState(Auswahl)
         richtung = 0
     }
+})
+forever(function () {
+    for (let I_Tower_Cooldown = 0; I_Tower_Cooldown <= Müll_.length - 1; I_Tower_Cooldown++) {
+        if (Towers_Cooldown[I_Tower_Cooldown] > 0) {
+            Towers_Cooldown[I_Tower_Cooldown] = Towers_Cooldown[I_Tower_Cooldown] - 1
+        }
+    }
+    pause(100)
 })
